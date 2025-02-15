@@ -1,0 +1,90 @@
+import json
+import os
+import csv
+
+# 定义路径
+jsonl_file = '/home/user1/zjs/实验/最终测试数据进行RAG实验/pubmedqa.jsonl'  # 替换为您的 JSONL 文件路径
+output_tsv = 'output.tsv'  # 输出 TSV 文件名
+
+# 文件路径模板
+base_dir = '/home/user1/zjs/实验/实验最终代码/pubmedqa/filtered_results'
+base_dir4 = '/home/user1/zjs/实验/实验最终代码/pubmedqa/gpt_generated_results'
+
+
+# 定义一个函数来清理文本
+def clean_text(text):
+    if not isinstance(text, str):
+        return ''
+    return text.replace('\n', ' ').replace('\r', ' ').replace('\t', ' ')
+
+
+# 读取 JSONL 文件
+data = []
+with open(jsonl_file, 'r', encoding='utf-8') as f:
+    for line_num, line in enumerate(f, start=1):
+        line = line.strip()
+        if not line:
+            print(f"警告: 第 {line_num} 行为空，跳过。")
+            continue
+        try:
+            json_obj = json.loads(line)
+            data.append(json_obj)
+        except json.JSONDecodeError as e:
+            print(f"错误: 无法解析第 {line_num} 行。错误信息: {e}")
+            continue
+
+
+# 读取文件内容的函数
+def read_file(file_path):
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                return file.read().strip()
+        except Exception as e:
+            print(f"错误: 无法读取文件 {file_path}. 错误信息: {e}")
+            return ''
+    else:
+        print(f"警告: 文件 {file_path} 不存在。")
+        return ''
+
+
+# 准备写入 TSV 文件
+with open(output_tsv, 'w', encoding='utf-8', newline='') as tsvfile:
+    writer = csv.writer(tsvfile, delimiter='\t', quoting=csv.QUOTE_MINIMAL, escapechar='\\')
+    # 修改表头，不包括 'options' 字段
+    writer.writerow(['question', 'answer', 'combined_info'])
+
+    for idx, entry in enumerate(data, start=1):
+        # 构建各个文件路径
+        folder1 = os.path.join(base_dir, f"{idx}/question/summarized_definitions.txt")
+        folder2 = os.path.join(base_dir, f"{idx}/options/summarized_definitions.txt")
+        folder3 = os.path.join(base_dir, f"{idx}/question/filtered_paths.txt")
+        folder4 = os.path.join(base_dir, f"{idx}/options/filtered_paths.txt")
+        folder5 = os.path.join(base_dir4, f"{idx}/{idx}_gpt_generated_knowledge.txt")
+
+        # 读取文件内容
+        summarized_definitions_question = read_file(folder1)
+        summarized_definitions_options = read_file(folder2)
+        filtered_paths_question = read_file(folder3)
+        filtered_paths_options = read_file(folder4)
+        gpt_generated_knowledge = read_file(folder5)
+
+        # 组合 `combined_info` 字段
+        combined_info = ' '.join([
+            clean_text(summarized_definitions_question),
+            clean_text(summarized_definitions_options),
+            clean_text(filtered_paths_question),
+            clean_text(filtered_paths_options),
+            clean_text(gpt_generated_knowledge)
+        ])
+
+        # 处理 `answer` 字段
+        answer = clean_text(entry.get('answer', ''))
+
+        # 处理 `question` 字段
+        question = clean_text(entry.get('question', ''))
+
+        # 写入 TSV 文件（不包括 'options' 字段）
+        writer.writerow([question, answer, combined_info])
+
+print(f"TSV 文件已生成：{output_tsv}")
