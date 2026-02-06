@@ -32,7 +32,26 @@ You can create a conda environment by running the command below.
 ```bash
 pip install -r requirements.txt
 ```
-Additionally, you need to install Neo4j and import the PrimeKG knowledge graph.
+Additionally, you need to install Neo4j(https://neo4j.com/) and import the PrimeKG knowledge graph.
+
+```bash
+wget -O - https://debian.neo4j.com/neotechnology.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/neotechnology.gpg
+echo 'deb [signed-by=/etc/apt/keyrings/neotechnology.gpg] https://debian.neo4j.com stable latest' | sudo tee -a /etc/apt/sources.list.d/neo4j.list
+sudo apt-get update
+```
+
+```bash
+apt list -a neo4j
+```
+Then intall Neo4j
+
+```bash
+sudo apt-get install neo4j=1:2025.05.0
+```
+
+You can download knowledge graph from https://dataverse.harvard.edu/citation?persistentId=doi:10.7910/DVN/IXA7BM
+
+
 
 ## 🚀 Quick start
 Take the MedMCQA dataset as an example.
