@@ -7,7 +7,6 @@
 
 This includes the original implementation of CKG-RAG: Enhancing LLM Reasoning in Medical Domain Using Contextual Knowledge Graphs.
 
-**D²-RAG** is a framework that achieves adaptive knowledge retrieval and utilization through a dual-stage decision mechanism.
 
 ## 📌 Abstract
 
@@ -16,7 +15,7 @@ Retrieval-augmented generation (RAG) has achieved significant progress in the me
 ## 🖼️ Framework
 
 <p align="center">
-  <img src="figure/CKG-RAG.pdf" alt="CKG-RAG Framework" width="90%">
+  <img src="figure/CKG-RAG.svg" alt="CKG-RAG Framework" width="90%">
 </p>
 
 
@@ -24,62 +23,51 @@ Retrieval-augmented generation (RAG) has achieved significant progress in the me
 ## 📋 Content
 1. [⚙️ Installation](#installation)
 2. [🚀 Quick Start](#quick-start)
-3. [📊 Baselines](#baselines)
+
 
 
 ## ⚙️ Installation
 You can create a conda environment by running the command below.
 
 ```bash
-conda env create -f environment.yml
+pip install -r requirements.txt
 ```
+Additionally, you need to install Neo4j and import the PrimeKG knowledge graph.
 
 ## 🚀 Quick start
-We provide [example data](example_data.jsonl). You can get our final results by by running the command below.
+Take the MedMCQA dataset as an example.
+
+[process_medmcqa_data](medmcqa/process_medmcqa_data.py)
+
+This code enables retrieval of all entity definitions from UMLS, along with all nodes and paths from the PrimeKG knowledge graph.
 
 ```bash
-python example.py
+python medmcqa/process_medmcqa_data.py
+
 ```
 
-📝 Your input file should be a `jsonl`.
+[filter_medmcqa](medmcqa/filter_medmcqa.py)
 
-[example.ipynb](example.ipynb) contains the complete implementation of our pipeline.
+This script filters out redundant paths and UMLS definitions from the previous step.
 
 ```bash
-run example.ipynb
+python medmcqa/filter_medmcqa.py
+
 ```
 
-we use Qwen3-Embedding-4B as our embedding model. 
+Then you can run this code to train the gnn-llm model
 
-📚Medical textbook data coming soon.
-
-[get_context_for_each_query_V2.py](get_context_for_each_query_V2.py) — Retrieves relevant documents for each query, powered by [LlamaIndex](https://www.llamaindex.ai/).
+[train](train.py)
 
 ```bash
-python get_context_for_each_query_V2.py
+python train.py
+
 ```
 
-## 📊 Baselines
 
-Implementation code for a subset of baseline methods.
 
-Retrieval-Augmented Generation baseline.
 
-```bash
-run RAG.ipynb
-```
 
-Context-Aware Decoding (CAD) baseline.
-
-```bash
-run cad.ipynb
-```
-
-Decoding by Contrasting Layers (DoLa) baseline.
-
-```bash
-run dola.ipynb
-```
 
 
 
