@@ -16,7 +16,7 @@ Retrieval-augmented generation (RAG) has achieved significant progress in the me
 ## 🖼️ Framework
 
 <p align="center">
-  <img src="figure/framework.svg" alt="CKG-RAG Framework" width="90%">
+  <img src="figure/CKG-RAG.pdf" alt="CKG-RAG Framework" width="90%">
 </p>
 
 
